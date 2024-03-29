@@ -48,6 +48,7 @@ class _HomePageState extends State<HomePage> {
 
       setState(() {
         _isLoading = false;
+        _isError = false;
         if (response.statusCode == 200) {
           _repositories = json.decode(response.body);
           for (var repo in _repositories) {
@@ -58,7 +59,7 @@ class _HomePageState extends State<HomePage> {
           _repositories = [];
           _isError = true;
           Fluttertoast.showToast(
-            msg: "Failed to fetch repositories",
+            msg: "Failed to fetch repositories ${response.body}",
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
             timeInSecForIosWeb: 3,
@@ -111,7 +112,7 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: const Color(0xFF181825),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : _isError || _isOffline ?
+          : _isOffline || _isError ?
       Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -158,7 +159,7 @@ class _HomePageState extends State<HomePage> {
                   if (_loadingCommits[repo['name']] == true)
                     const Center(child: CircularProgressIndicator())
                   else
-                    if (repo['last_commit'])
+                    if (repo.containsKey('last_commit') == true)
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
